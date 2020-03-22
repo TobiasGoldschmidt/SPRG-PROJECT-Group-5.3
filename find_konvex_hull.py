@@ -15,7 +15,7 @@ def find_lowest(obstacle):
 
 
 def distance(point, p0):
-    dist = sqrt((point[0] - p0[0]) ^ 2 + (point[1] - p0[1]) ^ 2)
+    dist = sqrt((point[0] - p0[0]) ** 2 + (point[1] - p0[1]) ** 2)
     return dist
 
 
@@ -59,10 +59,39 @@ def sort_by_angel(obstacle, p0):
     return non_konvex_hull
 
 
+def vector(a, b):
+    result = (b[1] - a[1]) / (b[0] - a[0])
+    return result
+
+
+def left_right(p, c, n, p0):
+    result = False
+    x = [n[0] + (c[1] - n[1])/vector(n, p), c[1]]
+    y = [c[0], n[1] + (c[0] - n[0])*vector(n, p)]
+    if (distance(c, p0) > distance(x, p0)) or (distance(c, p0) > distance(y, p0)):
+        result = True
+    return result
+
+
 def find_konvex_hull(non_konvex):
+    all_konvex_hulls = []
     for obstacle in non_konvex:
         konvex_hull = []
         p0 = find_lowest(obstacle)
         konvex_hull.append(p0)
-        non_konvex_hull = sort_by_angel(obstacle, p0)
-        return non_konvex_hull
+        if len(sort_by_angel(obstacle, p0)) < 3:
+            print("Objekt", non_konvex.index(obstacle), "nemá konvexný obal.")
+            continue
+        non_konvex_hull = sort_by_angel(obstacle, p0)[3:]
+        konvex_hull.extend([sort_by_angel(obstacle, p0)[1], sort_by_angel(obstacle, p0)[2]])
+        for point in non_konvex_hull:
+            arg = False
+            while arg is False:
+                if left_right(konvex_hull[-2], konvex_hull[-1], point, p0) is True:
+                    konvex_hull.append(point)
+                    arg = True
+                else:
+                    konvex_hull.pop(-1)
+                    arg = False
+        all_konvex_hulls.append(konvex_hull)
+    return all_konvex_hulls
