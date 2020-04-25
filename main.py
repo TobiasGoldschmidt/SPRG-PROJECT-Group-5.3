@@ -1,6 +1,6 @@
 import json
-import find_konvex_hull.py
-import find_route.py
+import find_konvex_hull
+import find_route
 
 
 def get_map_data():
