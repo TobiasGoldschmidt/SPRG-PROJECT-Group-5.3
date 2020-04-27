@@ -1,10 +1,12 @@
-import json
+﻿import json
 import find_konvex_hull
 import find_route
 import matplotlib.pyplot as plt
+# Importujeme potrebne moduly
 
 
 def get_map_data():
+    # Funkce, ktera nacita data a prevadi na list
     positions = []
     for i in json.load(open('map_data_1.json', 'r'))['object']:
         coordinates = i['coordinates']
@@ -13,6 +15,7 @@ def get_map_data():
 
 
 def get_path():
+    # Funkce ktera nacita data o vsech testovanych cestach a prevadi je na list
     data = json.load(open('test_path.json', 'r'))['path']
     paths = []
     for i in data:
@@ -23,6 +26,7 @@ def get_path():
 
 
 def obstacles_graph(plan):
+    # Funkce na vytvoreni grafu z objektu, ktere jsme dostali pomoci Grahamova algoritmu
     graph_x = []
     graph_y = []
     for obstacle in plan:
@@ -37,11 +41,13 @@ def obstacles_graph(plan):
         y_coordinates.append(y_coordinates[0])
         graph_x.append(x_coordinates)
         graph_y.append(y_coordinates)
+        # Pocatecni souradnice pridavame, abychom ziskali uzavreny tvar
     for i in range(len(plan)):
         plt.plot(graph_x[i - 1], graph_y[i - 1], 'black')
 
 
 def graph_route(path):
+    # Funkce na vyneseni cesty do grafu
     x_coordinates = []
     y_coordinates = []
     for item in path:
@@ -53,6 +59,9 @@ def graph_route(path):
 
 
 def main():
+    # Ridici funkce celeho programu, nejprve nacita velikost mapy,
+    # pote zkontroluje, jestli jeden zadany vrchol patri více vrcholum,
+    # jestlize nepatri zavola funkce z ostatnich skriptu a vykresli graf.
     check = []
     mapsize = json.load(open('map_data_1.json', 'r'))['map_size']
     for item in get_map_data():
