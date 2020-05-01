@@ -55,13 +55,14 @@ def graph_route(path):
         y = item[1]
         x_coordinates.append(x)
         y_coordinates.append(y)
-    plt.plot(x_coordinates, y_coordinates, 'r')
+    plt.plot(x_coordinates, y_coordinates, 'r', marker='o', markerfacecolor='r', markersize=4)
 
 
 def main():
     # Ridici funkce celeho programu, nejprve nacita velikost mapy,
     # pote zkontroluje, jestli jeden zadany vrchol patri více vrcholum,
     # jestlize nepatri zavola funkce z ostatnich skriptu a vykresli graf.
+    # Po spusteni programu je potrebne zatvorit okno s vykreslenym grafom pre vykreslenie dalsieho grafu cesty
     check = []
     mapsize = json.load(open('map_data_1.json', 'r'))['map_size']
     for item in get_map_data():
