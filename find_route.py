@@ -137,6 +137,57 @@ def max_angel(item, edge, start):
     return res
 
 
+def check_looping(path, konvex_hulls):
+    # Funkcia ktora overi ci nevstupuje porgram do slucky, ak ano vrati spat posledny krok a zvoli ine pokracovanie
+    new_path = path
+    if path.count(path[-1]) > 1:
+        for item2 in konvex_hulls:
+            for edge2 in item2:
+                if path[-1] == edge2:
+                    loop = edge2
+                    for item in konvex_hulls:
+                        for edge in item:
+                            if path[-2] == edge:
+                                if item[item.index(path[-2])] == item[-1]:
+                                    a = item[0]
+                                    b = item[item.index(path[-2]) - 1]
+                                    if loop == a:
+                                        new_path.pop(-1)
+                                        new_path.append(b)
+                                    elif loop == b:
+                                        new_path.pop(-1)
+                                        new_path.append(a)
+                                else:
+                                    a = item[item.index(path[-2]) + 1]
+                                    b = item[item.index(path[-2]) - 1]
+                                    if loop == a:
+                                        new_path.pop(-1)
+                                        new_path.append(b)
+                                    elif loop == b:
+                                        new_path.pop(-1)
+                                        new_path.append(a)
+                                    break
+                            else:
+                                if edge2 == item2[-1]:
+                                    a = item2[0]
+                                    b = item2[item2.index(path[-2]) - 1]
+                                else:
+                                    a = item2[item2.index(path[-2]) + 1]
+                                    b = item2[item2.index(path[-2]) - 1]
+                                vector1 = get_vector(edge2, a)
+                                vector2 = get_vector(edge2, b)
+                                if path[-2][1] == vector1[0] * path[-2][0] + vector1[1]:
+                                    new_path.pop(-1)
+                                    new_path.append(a)
+                                elif path[-2][1] == vector2[0] * path[-2][0] + vector2[1]:
+                                    new_path.pop(-1)
+                                    new_path.append(b)
+                        else:
+                            continue
+                        break
+    return new_path
+
+
 def find_route(start, end, konvex_hulls):
     # Riadiaca funkcia tohoto skriptu, vrati cestu zo startu do ciela pomedzi objekty ako list suradnic
     # Najskor skontroluje ci je pozicia v ktorej sa robot momentalne nachdza vrchol nejakeho objektu, ak je zisti ci
@@ -157,6 +208,8 @@ def find_route(start, end, konvex_hulls):
                             path.append(next_point)
                             start = next_point
                             arg = True
+                            path = check_looping(path, konvex_hulls)
+                            start = path[-1]
                             break
                     else:
                         if min_angel(item, edge, start) >= s_e_angel or s_e_angel >= max_angel(item, edge, start):
@@ -164,6 +217,8 @@ def find_route(start, end, konvex_hulls):
                             path.append(next_point)
                             start = next_point
                             arg = True
+                            path = check_looping(path, konvex_hulls)
+                            start = path[-1]
                             break
         if arg is True:
             continue
@@ -192,6 +247,8 @@ def find_route(start, end, konvex_hulls):
                 next_point = closer_to_end(konvex_hulls[c_p[1]][c_p[0]], konvex_hulls[c_p[1]][(c_p[0]) + 1], end)
             path.append(next_point)
             start = next_point
+            path = check_looping(path, konvex_hulls)
+            start = path[-1]
         else:
             start = end
             path.append(end)
