@@ -1,9 +1,13 @@
 from math import sqrt
 from math import degrees
 from math import atan
+# Importujeme potrebne funkcie
 
 
 def get_vector(point1, point2):
+    # Funkcia pomocou ktorej dostaneme rovnicu priamky reprezentujucu usecku,
+    # vychadza z toho ze zapis priamky v rovine je v tvare y=ax+b
+    # a je smernica a b je posun
     a = (point1[1] - point2[1]) / (point1[0] - point2[0])
     smaller = min(point1, point2, key=lambda item: item[0])
     b = ((-a) * smaller[0]) + smaller[1]
@@ -12,6 +16,10 @@ def get_vector(point1, point2):
 
 
 def get_collision(vector1, vector2):
+    # Funkcia ktora nam vrati prienik dvoch priamok reprezenrujucih usecky
+    # Aby sme dostali x-ovu suradnicu predelime rozdiel ich posunov rozdielom ich smernic,
+    # tento vztah dostaneme ak upravime rovnost a1x+b1=a2x+b2,
+    # y-ovu dopocitame z x-ovej
     x = (vector2[1] - vector1[1]) / (vector1[0] - vector2[0])
     y = vector1[0] * x + vector1[1]
     collision = [x, y]
@@ -19,11 +27,15 @@ def get_collision(vector1, vector2):
 
 
 def distance(point1, point2):
+    # Funkcia ktora nam vrati vzdialenost dvoch bodov vdaka pytagorovej vete
     dist = sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
     return dist
 
 
 def check_collision(point1, point2, start, end):
+    # Funkcia ktora zisti ci prienik dvoch priamok nastal, a vrati ho ako vysledok, na useckach ktore reprezentuju,
+    # bolo potrebne opodmienkovat vsetky speciale pripady, tj. jedna usecka je ovnobezna s osou y,
+    # obe su rovnobezne s osou y a priamky na ktorych sa nachadzaju su totozne
     collision = []
     res = False
     if point1[0] == point2[0]:
@@ -61,6 +73,8 @@ def check_collision(point1, point2, start, end):
 
 
 def closer_to_end(point1, point2, end):
+    # Funkcia ktora zisti ktory z dvoch bodov je blizsie k tretiemu bodu,
+    # pouzivame na zistenie ktory bod je blizsie k cielu cesty
     dist1 = distance(point1, end)
     dist2 = distance(point2, end)
     if dist1 > dist2:
@@ -71,6 +85,10 @@ def closer_to_end(point1, point2, end):
 
 
 def get_angel(p0, point):
+    # Funkcia ktora nam vrati uhol od pociatocneho bodu(chapeme tak za pociatocny bod je pociatok suradnicovej sustavy
+    # a teda ide o uhol od osi x tejto suradnicovej sustavy,
+    # so stupnami pracujeme pre zjednodusenie predstavenia si ako funguje,
+    # je potrebne opodmienkovat pripady pre ktore nieje funkcia atan definovana resp dava dva rozne vysledky
     if point[0] == p0[0] and point[1] > p0[1]:
         angel = 90
     elif point[0] == p0[0] and point[1] < p0[1]:
@@ -92,6 +110,7 @@ def get_angel(p0, point):
 
 
 def get_point(item, edge):
+    # Funkcia ktora vrati nasledujuceho suseda daneho vrcholu v objekte v smere hodinovych ruciciek
     if edge == item[-1]:
         point1 = item[0]
     else:
@@ -100,6 +119,7 @@ def get_point(item, edge):
 
 
 def min_angel(item, edge, start):
+    # Funkcia ktora nam vrati mensi z dvoch uhlov od bodu(vysvetlenie uhol k bodu viz. comment ku funkcii get angel)
     point1 = get_point(item, edge)
     point2 = item[item.index(edge) - 1]
     res = min(get_angel(start, point1), get_angel(start, point2))
@@ -107,6 +127,7 @@ def min_angel(item, edge, start):
 
 
 def max_angel(item, edge, start):
+    # Funkcia ktora nam vrati vacsi z dvoch uhlov od bodu(vysvetlenie uhol k bodu viz. comment ku funkcii get angel)
     if edge == item[-1]:
         point1 = item[0]
     else:
@@ -117,6 +138,12 @@ def max_angel(item, edge, start):
 
 
 def find_route(start, end, konvex_hulls):
+    # Riadiaca funkcia tohoto skriptu, vrati cestu zo startu do ciela pomedzi objekty ako list suradnic
+    # Najskor skontroluje ci je pozicia v ktorej sa robot momentalne nachdza vrchol nejakeho objektu, ak je zisti ci
+    # cesta nesmeruje cez objekt, ak ano tak vyberie susediaci vrchol a posunie sa do neho, ak nieje vo vrchole resp.
+    # je a jeho cesta nevedie cez objekt postupuje priamo smerom k cielu, ak narazi na na prekayku zastavi sa a
+    # pokracuje do toho z vrcholov strany ktory je blizsie k cielu a opakuje to pokial nieje jeho momentalna pozicia
+    # zhodna s cielovou poziciou
     path = [start]
     while start != end:
         arg = False
@@ -152,6 +179,7 @@ def find_route(start, end, konvex_hulls):
                     collisions.append(collision)
                     collisions_dict[item.index(edge), konvex_hulls.index(item)] = collision
         if collisions:
+            # Najskor najdeme vsetky objekty do ktorych mohol narazit a z nich vyberieme najblizsi naraz
             closest = min(collisions, key=lambda point: sqrt((point[0] - start[0]) ** 2 + (point[1] - start[1]) ** 2))
             path.append(closest)
             c_p = []
