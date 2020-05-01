@@ -220,6 +220,9 @@ def find_route(start, end, konvex_hulls):
                             path = check_looping(path, konvex_hulls)
                             start = path[-1]
                             break
+            else:
+                continue
+            break
         if arg is True:
             continue
         collisions = []
