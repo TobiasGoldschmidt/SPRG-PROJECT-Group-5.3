@@ -1,6 +1,7 @@
 from math import atan
 from math import sqrt
 from math import degrees
+# Importujeme potrebne moduly
 
 
 def find_lowest(obstacle):
